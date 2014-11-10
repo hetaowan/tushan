@@ -1,0 +1,23 @@
+﻿mkdir -p /var/log/cassandra
+ chown -R hadoop:hadoop /var/log/cassandra
+ mkdir -p /var/lib/cassandra
+  chown -R hadoop:hadoop /var/lib/cassandra
+  
+  bin/cassandra > log_cas.txt 2>&1 &
+  bin/nodetool -host 192.168.0.101 ring
+
+  bin/cassandra-cli -h 192.168.110.182 -p 9160
+  show keyspaces;
+  create keyspace urlstore;
+  create column family Urls with comparator=UTF8Type and default_validation_class=UTF8Type and key_validation_class=UTF8Type; 
+   
+  head -n 1000 url_info_20140915/000000_0 | sed -e 's/http:\/\///g' | awk -F'\001' '{if(length($2)>0){print $1"\001"$2}}' | java -cp feathouse.jar cn.clickwise.clickad.feathouse.CassandraStore 192.168.110.186
+  
+  get Urls[ffff044d0ea55d8bafe289af61c93192];
+  
+  tail -n 10000000 log_add_ardb.txt | head -n 500000 |awk '{print $8}' | awk -F',' '{print $1}' | sed -e 's/ardb:key=//g' >> test_ardb.txt
+  tail -n 10000000 log_add_to_cas.txt | head -n 500000 |awk '{print $6}' | awk -F',' '{print $1}' | sed -e 's/adding:key=//g' >> test_cassandra.txt
+  
+  cat test_ardb.txt | java -cp out/feathouse.jar cn.clickwise.clickad.feathouse.ArdbQuery 192.168.110.181 
+  cat test_cassandra.txt | java -cp out/feathouse.jar cn.clickwise.clickad.feathouse.CassandraQuery 192.168.110.182 > log_query_cassandra.txt 2>&1 &
+  

@@ -1,0 +1,24 @@
+在使用CentOS系统的时候，我们可能会遇到时间不准的问题，那我们如何解决这个我问题呢，下面就来教大家一个CentOS系统时间同步的方法，希望大家可以解决自己所存在的疑问。
+
+CentOS系统时间同步的步骤如下：
+
+新装的CentOS系统服务器可能设置了错误的,需要调整时区并调整时间.
+
+如下是CentOS系统使用NTP来从一个时间服务器同步
+cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+ntpdate us.pool.ntp.org
+
+很简单吧！
+
+下面解析一下,第一句是把当前时区调整为上海就是+8区,想改其他时区也可以去看看/usr/share/zoneinfo目录;
+
+然后第二句是利用ntpdate同步标准时间.
+
+没有安装ntpdate的可以yum一下:
+yum install -y ntpdate
+
+加入定时计划任务，每隔10分钟同步一下时钟
+crontab -e
+0-59/10 * * * * /usr/sbin/ntpdate us.pool.ntp.org | logger -t NTP
+
+这样，我们就可以来解决在CentOS系统中时间不准确的问题了。

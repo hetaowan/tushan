@@ -1,0 +1,3 @@
+tar --exclude=hostCate/data_dir -zcvf hostCate.tar.gz hostCate 
+
+zip -r hiworldext.xpi *

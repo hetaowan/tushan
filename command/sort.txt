@@ -1,0 +1,1 @@
+hadoop fs -cat /user/nstat/20130101/host_stat_output/host_stat/000000_0 |sed -e 's/\x1/|/g'| sort -t"|" -n -k2 -r | more

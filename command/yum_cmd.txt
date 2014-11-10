@@ -1,0 +1,5 @@
+yum -y install php-mbstring
+yum info mysql
+yum remove
+rpm -qa | grep 'jdk'
+yum whatprovides libexpat.so.0

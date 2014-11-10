@@ -1,0 +1,22 @@
+yum remove php
+yum remove php-common
+
+----------------------------
+ php-cli                                  x86_64                             5.1.6-40.el5_9                                installed                             5.3 M
+ php-mbstring                             x86_64                             5.1.6-40.el5_9                                installed                             1.8 M
+ php-mysql                                x86_64                             5.1.6-40.el5_9                                installed                             196 k
+ php-pdo  
+ -------------------------------------------
+ yum install php53
+ yum install php53-mbstring
+ yum install php53-mysql.x86_64
+ 
+ [root@zjdx_fx8 yum.repos.d]# ls
+CentOS-Base.repo  CentOS-Debuginfo.repo  CentOS-Media.repo  CentOS-Vault.repo  dag.repo
+
+ yum remove -y php-common; yum install -y php53 php53-mbstring php53-mysql php53-devel.x86_64
+ 
+ CentOS-Base.repo       CentOS-Media.repo  dag.repo   epel-testing.repo  pgdg-91-centos.repo  webtatic.repo
+CentOS-Base1.repo  CentOS-Debuginfo.repo  CentOS-Vault.repo  epel.repo  mongodb.repo       pgdg-92-centos.repo
+
+chmod 0755 authorized_keys

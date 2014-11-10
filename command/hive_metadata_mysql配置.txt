@@ -1,0 +1,125 @@
+配置本地mysql metastore
+修改配置hive-default.xml
+<property>
+  <name>hive.metastore.warehouse.dir</name>
+  <value>/user/hive/warehouse</value>
+</property>
+
+<property>
+  <name>hive.metastore.local</name>
+  <value>true</value>
+</property>
+
+<property>
+  <name>javax.jdo.option.ConnectionURL</name>
+  <value>jdbc:mysql://127.0.0.1/hive?createDatabaseIfNotExist=true</value>
+</property>
+
+<property>
+  <name>javax.jdo.option.ConnectionDriverName</name>
+  <value>com.mysql.jdbc.Driver</value>
+</property>
+
+<property>
+  <name>javax.jdo.option.ConnectionUserName</name>
+  <value>root</value>
+</property>
+
+<property>
+  <name>javax.jdo.option.ConnectionPassword</name>
+  <value>123</value>
+</property>
+
+mysql 的版本为mysql  Ver 14.14 Distrib 5.1.52
+把此文件下的mysql-connector-java-5.1.13.tar.gz　中的解压中的mysql-connector-java-5.1.13-bin.jar　改为mysql.jar并把它移到HIVE_HOME/lib目录下面。
+
+
+
+
+三、使用远端mysql服务器存储元数据。这种存储方式需要在远端服务器运行一个mysql服务器，并且需要在Hive服务器启动meta服务。
+
+1）Hive服务器端配置如下。
+
+
+<property>
+
+  <name>hive.metastore.warehouse.dir</name>
+
+  <value>/user/hive/warehouse</value>
+
+</property>
+
+ 
+
+  <name>javax.jdo.option.ConnectionURL</name>
+
+  <value>jdbc:mysql://10.199.55.10/hive?createDatabaseIfNotExist=true</value>
+
+</property>
+
+ 
+
+<property>
+
+  <name>javax.jdo.option.ConnectionDriverName</name>
+
+  <value>com.mysql.jdbc.Driver</value>
+
+</property>
+
+ 
+
+<property>
+
+  <name>javax.jdo.option.ConnectionUserName</name>
+
+  <value>root</value>
+
+</property>
+
+ 
+
+<property>
+
+  <name>javax.jdo.option.ConnectionPassword</name>
+
+  <value>123</value>
+
+</property>
+2）Hive客户端配置如下。
+
+
+<property>
+
+  <name>hive.metastore.warehouse.dir</name>
+
+  <value>/user/hive/warehouse</value>
+
+</property>
+
+ 
+
+<property>
+
+  <name>hive.metastore.local</name>
+
+  <value>false</value>
+
+</property>
+
+ 
+
+<property>
+	<name>hive.metastore.uris</name>
+	<value>thrift://10.199.55.10:9083</value>
+</property>
+3）服务进程启动如下，默认监听的端口是9083（Hive版本低于0.5的才这样启动）。
+
+hive --service metastore 
+hive --service metastore >hive.log 2>&1 &
+
+4)然后就可以在不同机器上登陆hive了。
+
+
+
+

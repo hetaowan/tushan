@@ -1,0 +1,13 @@
+svn checkout --username alanshu http://192.168.210.242/svn/data_analysis/trunk/src/nstat
+
+svn add *
+svn ci -m ''
+svn status
+svn diff pipe_host_cate.php 
+
+yum install -y subversion
+
+svn update
+svn delete
+
+ls -aR rest_server_pull_bak | grep svn: |sed -e 's/://g'| xargs rm -rf

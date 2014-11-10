@@ -1,0 +1,2 @@
+/data/disk3/access_data
+jar clickeye_mr.jar checkinfo $this->day $this->input $HOST_CRAWL_H

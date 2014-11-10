@@ -1,0 +1,12 @@
+date +%Y%m%d
+for LINE in `cat /etc/passwd`  
+do   
+        echo $LINE 
+done
+
+$#
+命令行或者是位置参数的个数.(见Example 33-2)
+$*
+所有的位置参数,被作为一个单词.
+注意:"$*"必须被""引用.
+$@

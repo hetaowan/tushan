@@ -1,0 +1,21 @@
+hadoop-daemon.sh start namenode 和 hadoop-daemon.sh start datanode
+hadoop-daemon.sh start jobtracker 
+hadoop-daemon.sh start secondarynamenode
+hadoop-daemon.sh start tasktracker 
+hadoop dfsadmin -safemode leave 
+hadoop dfs.data.dir 权限要为755
+alter table iaccess drop partition(dt=20130126);
+hadoop fsck /
+hadoop fsck / -delete
+
+hadoop-daemon.sh stop datanode
+hadoop-daemon.sh stop tasktracker
+
+hadoop job -status job_201310262127_0009
+lynx 192.168.10.6:50030
+rz
+
+spark ： http://192.168.210.211:18080/hbase-master: http://bigdata207:60010/master-status
+hadoop: http://bigdata206:8088/cluster/
+hue: http://192.168.210.211:8888/  clickwise/chinatt_datafrog
+hadoop job -list

@@ -1,0 +1,3 @@
+tcpdump -Avvn -r WL.pccap
+
+/usr/sbin/tcpdump -vvn -n -r  WL_140214.pcap | more

@@ -1,0 +1,11 @@
+the implementation of compound  conditional random field 
+
+the implementation depends on edu.stanford package
+
+the first implementation is piecewise likelihood training
+
+要实现的部分：
+  1.给定一个piecewise(考虑训练样本和未知样本),和当前的theta,alpha参数,需要评估当前参数下，对于每个特征theta的梯度，和当前参数下piecewise 
+  likelihood 的值，想想存储的数据结构
+  
+  2.

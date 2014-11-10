@@ -1,0 +1,6 @@
+
+hive_process.sh 
+scp -P 9777 -r /hadoop/statics_data/$1 cloud1:/statics_data
+
+hive_iaccess_process.sh
+scp -r /hadoop/statics_data/liujun/$1/ root@42.120.44.50:/srv/www/lighttpd/ad/amonitor/data

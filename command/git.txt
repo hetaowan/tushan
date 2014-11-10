@@ -1,0 +1,161 @@
+yum install curl-devel expat-devel gettext-devel openssl-devel zlib-devel
+env GIT_SSL_NO_VERIFY=true  git clone https://github.com/bluesky1999/jmlp.git
+假设这样一种情况：
+
+1. 我创建了本地分支b1并pull到远程分支 origin/b1；
+
+2. 其他人在本地使用fetch或pull创建了本地的b1分支；
+
+3. 我删除了 origin/b1 远程分支；
+
+4. 其他人再次执行fetch或者pull并不会删除这个他们本地的 b1 分支，运行 git branch -a 也不能看出这个branch被删除了，如何处理？
+
+
+使用下面的代码查看b1的状态：
+
+
+# git remote show origin
+
+* remote origin
+
+  Fetch URL: git@github.com:xxx/xxx.git
+
+  Push  URL: git@github.com:xxx/xxx.git
+
+  HEAD branch: master
+
+  Remote branches:
+
+    master                 tracked
+
+    refs/remotes/origin/b1 stale (use 'git remote prune' to remove)
+
+  Local branch configured for 'git pull':
+
+    master merges with remote master
+
+  Local ref configured for 'git push':
+
+    master pushes to master (up to date)
+
+这时候能够看到b1是stale的，使用 git remote prune origin 可以将其从本地版本库中去除。
+
+
+更简单的方法是使用这个命令，它在fetch之后删除掉没有与远程分支对应的本地分支：
+
+git fetch -p
+
+
+
+
+
+---------------------------------------------
+git server
+bash: git-upload-pack: command not found
+fatal: The remote end hung up unexpectedly
+
+什么原因呢？原来代码服务器【192.168.57.61】上的git安装路径是/usr/local/git，不是默认路径，根据提示，在git服务器192.168.57.61上， 建立链接文件：
+
+[root@localhost code]# ln -s /usr/local/git/bin/git-upload-pack /usr/bin/git-upload-pack  
+
+安装路径/usr/local/git/bin/git-upload-pack (或者/root/bin/git-upload-pack)
+linux默认路径/usr/bin/git-upload-pack
+
+当然，也许你会遇到git-receive-pack 之类的错误，很有可能和这个原理是一样的，请采用类似的操作即可！
+ln -s /root/bin/git-receive-pack /usr/bin/git-receive-pack
+
+
+---------------------------------------------------
+提交初始版本
+
+cd /home/git/DataAnalysis
+[root@adt2 DataAnalysis]# ls
+ myproject
+
+[root@adt2 DataAnalysis] mkdir initial.commit  
+[root@adt2 DataAnalysis] cd initial.commit/ 
+[root@adt2 initial.commit]#  git init  
+[root@adt2 initial.commit]#    touch Readme  
+[root@adt2 initial.commit]#    git add Readme  
+[root@adt2 initial.commit]#   git commit -m "initial commit"  
+[root@adt2 initial.commit]#   git push origin master  
+   
+[root@adt2 DataAnalysis]# ls
+initial.commit  myproject
+
+
+任意客户端git clone /home/lgao/sources/my_own/repositories/myprj/
+
+
+-------------git 安装-------------------------
+unzip git-master.zip
+make &make install
+
+vi /etc/profile
+GIT_HOME=/opt/git/git-master
+PATH=$GIT_HOME:$PATH
+export PATH USER LOGNAME MAIL HOSTNAME HISTSIZE INPUTRC HADOOP_HOME JAVA_HOME JRE_HOME CLASSPATH HIVE_HOME
+
+-----------初次使用--------------------------------
+    git config --global user.name "Your Name"
+    git config --global user.email you@example.com
+	
+这是为了区分不同的提交者	
+
+-------------------git web----------------------------------
+$ [root@bogon /]# ls -F $(dirname $(dirname $(git --html-path)))/gitweb
+
+$ gitweb.cgi*  static/
+
+$ [root@bogon /]# echo $(dirname $(dirname $(git --html-path)))/gitweb
+
+$ /root/share/gitweb
+
+vi /etc/httpd/conf/httpd.conf
+
+Alias /gitweb "/root/share/gitweb/"
+
+<Directory "/root/share/gitweb">
+
+    Options FollowSymLinks +ExecCGI
+
+    AddHandler cgi-script .cgi
+
+    DirectoryIndex index.cgi gitweb.cgi
+
+    Order allow,deny
+
+    Allow from all
+
+</Directory>
+
+编辑/etc/gitweb.conf（如果没有就新建），按如下配置即可：
+$projectroot = "/home/git";//////注，此目录是要展示的项目的上层目录，例如/home/git 下有DataAnalysis项目
+# 设置克隆每个版本库的URL地址，一个版本库可以设置多个地址
+
+@git_base_url_list= ("git://192.168.110.182/git", "http://192.168.110.182/gitweb");
+
+
+# 菜单定制：tree view文件旁显示追溯(blame)链接
+
+$feature{'blame'}{'default'} = [1];
+
+$feature{'blame'}{'override'} = 1;
+
+
+
+# 菜单定制：tree添加快照(snapshot)下载链接
+
+$feature{'snapshot'}{'default'} = ['zip', 'tgz'];
+
+$feature{'snapshot'}{'override'} = 1;
+
+
+---------------------------------------------
+vi /etc/httpd/conf/httpd.conf
+#User apache
+#Group apache
+User apache
+Group root
+
+chmod -R a+rwx /home/git

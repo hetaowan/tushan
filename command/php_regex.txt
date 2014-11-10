@@ -1,0 +1,6 @@
+$str="news.ifeng.com /shendu/qiushi/detail_2013_08/01/28163583_0.shtml";
+$filled_url=preg_replace("/[\s \t\n]*/","",$str);
+echo "filled_url:".$filled_url."\n";
+
+
+$word=preg_replace("/``/","",$word);

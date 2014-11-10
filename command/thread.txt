@@ -1,0 +1,78 @@
+java 解决main线程退出，main线程创建的子线程不退出的问题
+
+方案一：
+		  String line="";
+		  String title="";
+		  ArrayList<String> url_content=new ArrayList<String>();
+		  String last_url="";
+		  
+		  ArrayList<ThreadGroup> started_groups=new ArrayList<ThreadGroup>();
+		  Thread t=null;
+		  for(int i=0;i<url_arr.length;i++)
+		  {
+			  line=url_arr[i];
+			  line=line.trim();
+			  Thread.sleep(50);
+              Runnable r =  new  PageCrawlThreadBatch(line,url_content,useProxy,proxy_arr,"redirectinfo");
+              
+              t =  new  Thread(r);
+              started_groups.add(t.getThreadGroup());
+              t.start();
+              t.join();  
+		  }
+		  
+         
+         ThreadGroup tg=null;
+         HashMap<String,String> eh=new HashMap<String,String>();
+         for(int i=0;i<started_groups.size();i++)
+         {
+            tg=	started_groups.get(i);
+            Thread[] tgl=new Thread[tg.activeCount()];
+            tg.enumerate(tgl);
+            for(int j=0;j<tgl.length;j++)
+            {
+            	if(tgl[j]!=null)
+            	{
+            	 if(!(eh.containsKey(tgl[j].getId()+"")))
+            	 {
+            		 extra_threads.add(tgl[j]);
+                     eh.put(tgl[j].getId()+"", "1");
+            	 }
+            	}
+            }
+         }
+         
+        Thread ct=null;
+ 	    for(int i=0;i<extra_threads.size();i++)
+ 	    {
+ 	    	ct=extra_threads.get(i);
+ 	    	//System.out.println(ct.getName()+" "+ct.getId());
+ 	    	if(!((ct.getName().trim()).equals("main")))
+ 	    	{
+ 	    		ct.stop();
+ 	    	}
+ 	    }
+		
+方案二：
+    默认情况下不会，要想让子线程跟随父线程退出，要吧子线程设置为守护线程
+比如：
+  public static void main(String[] args)
+  {
+	TestThread test01=new TestThread("线程A",10);
+	test01.setDaemon(true);
+	test01.start();
+  }
+  
+  在Java中有两类线程：用户线程 (User Thread)、守护线程 (Daemon Thread)。
+
+所谓守护 线程，是指在程序运行的时候在后台提供一种通用服务的线程，比如垃圾回收线程就是一个很称职的守护者，并且这种线程并不属于程序中不可或缺的部分。因 此，当所有的非守护线程结束时，程序也就终止了，同时会杀死进程中的所有守护线程。反过来说，只要任何非守护线程还在运行，程序就不会终止。
+
+用户线程和守护线程两者几乎没有区别，唯一的不同之处就在于虚拟机的离开：如果用户线程已经全部退出运行了，只剩下守护线程存在了，虚拟机也就退出了。 ****因为没有了被守护者，守护线程也就没有工作可做了，也就没有继续运行程序的必要了。******
+
+将线程转换为守护线程可以通过调用Thread对象的setDaemon(true)方法来实现。在使用守护线程时需要注意一下几点：
+
+(1) thread.setDaemon(true)必须在thread.start()之前设置，否则会跑出一个IllegalThreadStateException异常。你不能把正在运行的常规线程设置为守护线程。 
+
+(2) 在Daemon线程中产生的新线程也是Daemon的。
+
+(3) 守护线程应该永远不去访问固有资源，如文件、数据库，因为它会在任何时候甚至在一个操作的中间发生中断。

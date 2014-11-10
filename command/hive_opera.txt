@@ -1,0 +1,202 @@
+/home/hadoop/liqi/hive_opera/output
+/home/hadoop/lq/SWA/php/hive_opera/output
+
+ALTER TABLE day_table ADD
+PARTITION (dt='2008-08-08', hour='08')
+ALTER TABLE iaccess  DROP PARTITION (dt='20120718');
+ALTER TABLE astat  DROP PARTITION (dt='20131223');
+	
+/*****insert into local****/
+INSERT OVERWRITE LOCAL DIRECTORY '/tmp/ca_employees'
+SELECT name, salary, address
+FROM employees
+WHERE se.state = 'CA';
+INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/lq/SWA/php/hive_opera/output/area_statis' SELECT dt,count(1) FROM nstat WHERE dt>=20130801 and dt<=20130801 and loc like "%贵阳%" GROUP BY dt;
+
+INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/hive_opera/output/area_statis' SELECT dt,count(1) FROM nstat WHERE dt>=20140216 and dt<=20140218 and loc like "%舟山%" GROUP BY dt;
+INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/hive_opera/output/area_statis' SELECT dt,loc,count(1) FROM nstat WHERE dt>=20140327 and dt<=2014047  GROUP BY dt,loc;
+
+INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/lq/SWA/php/hive_opera/output/dns_statis' SELECT domainname,count(1) as count FROM dns_request WHERE dt>=20140214 and dt<=20140214 and (destip="202.101.172.47" or destip="202.101.172.35") GROUP BY domainname order by count desc;
+
+
+ INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/SWA/php/hive_opera/output/travel/20140224' SELECT b.area,c.area,count(1) as num FROM  travel_pair_area a JOIN code_area_map b  JOIN code_area_map c ON a.areaa=b.code and a.areab=c.code where b.code IS NOT NULL and a.areaa IS NOT NULL and a.areab IS NOT NULL and c.code IS NOT NULL group by b.area,c.area Order by num desc;
+ 
+ 
+  INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/SWA/php/hive_opera/output/travel/20140224/single_area' SELECT b.area,count(1) as num FROM  travel_single_area a JOIN code_area_map b   ON a.areaa=b.code where b.code IS NOT NULL and a.areaa IS NOT NULL  group by b.area Order by num desc;
+ 
+ 
+ /***去哪儿城市A-城市B****/
+ INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/SWA/php/hive_opera/output/travel/20140227/pair_area_qunar' SELECT b.area,c.area,count(1) as num FROM  travel_pair_area a JOIN code_area_map b  JOIN code_area_map c ON a.areaa=b.code and a.areab=c.code where b.code IS NOT NULL and a.areaa IS NOT NULL and a.areab IS NOT NULL and c.code IS NOT NULL and a.host like "%qunar%" and b.host like "%qunar%" and c.host like "%qunar%" and dt=20140227 group by b.area,c.area Order by num desc;
+ 
+ /***去哪儿城市A*****/
+ INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/SWA/php/hive_opera/output/travel/20140227/single_area_qunar' SELECT b.area,count(1) as num FROM  travel_single_area a JOIN code_area_map b   ON a.area=b.code where b.code IS NOT NULL and a.areaa IS NOT NULL and a.host like "%qunar%" and   b.host like "%qunar%" group by b.area Order by num desc;
+ 
+  /***携程城市A-城市B****/
+ INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/SWA/php/hive_opera/output/travel/20140227/pair_area_ctrip' SELECT b.area,c.area,count(1) as num FROM  travel_pair_area a JOIN code_area_map b  JOIN code_area_map c ON a.areaa=b.code and a.areab=c.code where b.code IS NOT NULL and a.areaa IS NOT NULL and a.areab IS NOT NULL and c.code IS NOT NULL and a.host like "%ctrip%" and b.host like "%ctrip%" and c.host like "%ctrip%" group by b.area,c.area Order by num desc;
+ 
+ /***携程城市A*****/
+ INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/SWA/php/hive_opera/output/travel/20140227/single_area_ctrip' SELECT b.area,count(1) as num FROM  travel_single_area a JOIN code_area_map b   ON trim(a.areaa)=trim(b.code) where b.code IS NOT NULL and a.areaa IS NOT NULL and a.host like "%ctrip%" and   b.host like "%ctrip%" group by b.area Order by num desc;
+ 
+ 
+ 
+ hive_proc "INSERT OVERWRITE LOCAL DIRECTORY '/hadoop/statics_data/liujun/$1/iaccess_area_pv_uv_ips_push_statics/' select area,count(1),count(distinct cookie),count(distinct ci_ip) from iaccess where dt='$1' group by area;";
+    hive_proc "INSERT OVERWRITE LOCAL DIRECTORY '/hadoop/statics_data/liujun/$1/iaccess_all_pv_uv_ips_push_statics/' select count(1),count(distinct cookie),count(distinct ci_ip) from iaccess where dt='$1' ;";
+    hive_proc "INSERT OVERWRITE LOCAL DIRECTORY '/hadoop/statics_data/liujun/$1/iaccess_t0033_area_pv_uv_ips_push_statics/' select area,count(1),count(distinct cookie),count(distinct ci_ip) from iaccess where dt='$1' and area='t0033' and (ci_ip_area like '%电信通%') group by area;";
+    hive_proc "INSERT OVERWRITE LOCAL DIRECTORY '/hadoop/statics_data/liujun/$1/iaccess_group_pv_uv_ips_push_statics/' select * from (select 'huancun',count(1),count(distinct cookie),count(distinct ci_ip) from iaccess where dt='$1' and (area='t0001' or area='t0002' or area='t0003' or area='t0005' or area='t0007' or area='t0008' or area='t0009' or area='t0010' or area='t0011' or area='t0012' or area='t0013' or area='t0014' or area='t0015' or area='t0016' or area='t0017' or area='t0019' or area='t0020' or area='t0021' or area='t0022' or area='t0023' or area='t0024' or area='t0025' or area='t0026' or area='t0027' or area='t0028' or area='t0029' or area='t0030' or area='t0031' or area='t0034' or area='t0033' or area='t0043' or area='t0044' or area='t0045' or area='t0046' or area='t0047' or area='t0048' or area='t0050' or area='t0060' or area='t0061' or area='t0062' or area='t0063' or area='t0066' or area='t0067' or area='t1201' or area='t1202' or area='t1203' or area='t1204') union all select 'bandmix',count(1),count(distinct cookie),count(distinct ci_ip) from iaccess where dt='$1' and area like 't10%') mapout";
+	
+	
+	
+	/**********/
+	
+	INSERT OVERWRITE LOCAL DIRECTORY '/hadoop/statics_data/liujun/20140305/iaccess_area_pv_uv_ips_push_statics/' select area,count(1),count(distinct cookie),count(distinct ci_ip) from iaccess where dt='20140305' group by area;
+	
+	INSERT OVERWRITE LOCAL DIRECTORY '/hadoop/statics_data/liujun/20140305/iaccess_all_pv_uv_ips_push_statics/' select count(1),count(distinct cookie),count(distinct ci_ip) from iaccess where dt='20140305' ;
+	
+	INSERT OVERWRITE LOCAL DIRECTORY '/hadoop/statics_data/liujun/20140305/iaccess_t0033_area_pv_uv_ips_push_statics/' select area,count(1),count(distinct cookie),count(distinct ci_ip) from iaccess where dt='20140305' and area='t0033' and (ci_ip_area like '%电信通%') group by area;
+	
+	INSERT OVERWRITE LOCAL DIRECTORY '/hadoop/statics_data/liujun/20140305/iaccess_group_pv_uv_ips_push_statics/' select * from (select 'huancun',count(1),count(distinct cookie),count(distinct ci_ip) from iaccess where dt='20140305' and (area='t0001' or area='t0002' or area='t0003' or area='t0005' or area='t0007' or area='t0008' or area='t0009' or area='t0010' or area='t0011' or area='t0012' or area='t0013' or area='t0014' or area='t0015' or area='t0016' or area='t0017' or area='t0019' or area='t0020' or area='t0021' or area='t0022' or area='t0023' or area='t0024' or area='t0025' or area='t0026' or area='t0027' or area='t0028' or area='t0029' or area='t0030' or area='t0031' or area='t0034' or area='t0033' or area='t0043' or area='t0044' or area='t0045' or area='t0046' or area='t0047' or area='t0048' or area='t0050' or area='t0060' or area='t0061' or area='t0062' or area='t0063' or area='t0066' or area='t0067' or area='t1201' or area='t1202' or area='t1203' or area='t1204') union all select 'bandmix',count(1),count(distinct cookie),count(distinct ci_ip) from iaccess where dt='20140305' and area like 't10%') mapout;
+	
+	/**********/
+	
+	INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/lq/SWA/temp/radius/20140302/refers' select refer,count(1) as num from so189 where dt='20140302' and length(refer)>0 group by refer order by num desc;
+	
+	INSERT OVERWRITE DIRECTORY '$unverify_hosts' SELECT distinct(trim(a.refer)) FROM  so189 a LEFT OUTER JOIN soKnownHosts b   ON trim(a.refer)=trim(b.host) where b.host IS NULL and length(a.refer)>0 ;
+	
+	INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/SWA/php/hive_opera/output/dns_reqres/20140217_5' SELECT a.srcip,a.srcport,a.destip,a.destport,a.atime,a.requestid,a.requesttype,a.domainname,a.extrainfo,b.atime,b.responseformat,b.responsetype,b.responsevalue  FROM  dns_request a  JOIN dns_response b  ON a.srcip=b.destip where  a.dt='20140217' and b.dt='20140217' and a.destip=b.srcip and a.srcport=b.destport and a.requestid=b.requestid and a.domainname=b.domainname and a.requesttype=b.requesttype and a.extrainfo=b.extrainfo;
+	
+	
+	
+	INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/xd' SELECT host, url, title from  iaccess where ((title like "%吸毒%") or (title like "%明星%吸毒%") or (title like "%吸毒%明星%") or (title like "%涉毒%明星%") or (title like "%明星%涉毒%")  or (title like "%娱乐%吸毒%") or (title like "%吸毒%娱乐%")) and dt=20140318;
+	
+		/*****查询host*****/
+	/home/hadoop/liqi/hive_opera/output/host_statis
+	INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/hive_opera/output/host_statis/20140313' select host,count(1) as num from nstat where dt='20140313' and length(host)>0 group by host order by num desc;
+	INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/hive_opera/output/host_statis/20140402' select host,count(1) as num from nstat where dt='20140402' and length(host)>0 group by host order by num desc;
+	
+	INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/xd_url' SELECT url,count(1) as num from  iaccess where ((title like "%吸毒%") or (title like "%明星%吸毒%") or (title like "%吸毒%明星%") or (title like "%涉毒%明星%") or (title like "%明星%涉毒%")  or (title like "%娱乐%吸毒%") or (title like "%吸毒%娱乐%")) and dt=20140318 group by url order by num desc;
+	
+	
+	
+	INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/p2p' SELECT host, url, title from  iaccess where ((title like "%p2p%贷款%") or (title like "%贷款%p2p%") or (title like "%借贷%民间%") or (title like "%民间%借贷%") ) and dt=20140324;
+	
+	INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/p2p_statis/20140329' SELECT host,count(1) as num from  iaccess where ((title like "%p2p%贷款%") or (title like "%贷款%p2p%") or (title like "%借贷%民间%") or (title like "%民间%借贷%") ) and dt=20140329 group by host order by num desc;
+	
+	INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/utr/20140413' SELECT url , trim(title), refer,count(1) as num from  iaccess where  dt=20140413 group by url,trim(title),refer order by num desc;
+	
+	
+	INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/lvyou_chuguo_pv' SELECT host, count(1) as num from  iaccess where ((title like "%出国%") or (title like "%境外%") or (title like "%留学%") or (title like "%国际%旅行%") or (title like "%旅行%国际%") ) and dt=20140716 group by host order by num desc;
+	
+	
+	INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/hive_opera/output/area_statis_incrn' SELECT dt,ount(1) FROM nstat WHERE dt>=20140326   GROUP BY dt;
+	
+	
+	INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/hive_opera/output/area_statis_180181_ip' SELECT dt,count(distinct(sip)) FROM nstat WHERE dt=20130101   GROUP BY dt;
+	
+	INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/hive_opera/output/area_statis_cate_180181' SELECT a.dt,b.cate,count(1) as num FROM nstat a JOIN host_cate_redis b  ON  a.host=b.host where a.dt=20130101  and b.cate!='NA' GROUP BY a.dt,b.cate order by num desc;
+	
+	INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/hive_opera/output/area_statis_catenona_ip_180181' SELECT a.dt,b.cate,count(distinct(a.sip)) as num FROM nstat a JOIN host_cate_redis b  ON  a.host=b.host where a.dt=20130101  and b.cate!='NA' GROUP BY a.dt,b.cate order by num desc;
+	
+	
+	INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/hive_opera/output/area_statis_catehost_pv_180181' SELECT a.dt,a.host,b.cate,count(1) as num FROM nstat a JOIN host_cate_redis b  ON  a.host=b.host where a.dt=20130101   GROUP BY a.dt,a.host,b.cate order by num desc;
+	
+	INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/hive_opera/output/area_statis_catenona_ip_180181m' SELECT a.dt,a.host,b.cate,count(distinct(a.sip)) as num FROM nstat a JOIN host_cate_redis b  ON  a.host=b.host where a.dt=20130101  and b.cate!='NA' and b.cate IS NOT NULL and a.sip IS NOT NULL GROUP BY a.dt,a.host,b.cate order by num desc;
+		
+		
+		
+		
+	CREATE TABLE IF NOT EXISTS host_cate_redis(host string,cate string) PARTITIONED BY(dt STRING,dp string) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\001' LINES TERMINATED BY '\n';
+	
+	CREATE TABLE IF NOT EXISTS user_click(cookie string,ad string) PARTITIONED BY(dt STRING,dp string) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\001' LINES TERMINATED BY '\n';
+	CREATE TABLE IF NOT EXISTS user_host(cookie string,host string) PARTITIONED BY(dt STRING,dp string) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\001' LINES TERMINATED BY '\n';
+	load data inpath '/user/uclick/uhosts/uhostclean.txt' overwrite into table user_host partition(dt=20140717,dp='part1');
+	load data inpath '/user/uclick/uads/uclkad.txt' overwrite into table user_click partition(dt=20140717,dp='part1');
+	INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/lq/SWA_Eclipse/cplus/userad/branches/admatch_strategy/temp/uclick/output' SELECT a.host,b.ad, count(1) as num FROM user_host a JOIN user_click b  ON  a.cookie=b.cookie where  a.cookie IS NOT NULL  and b.cookie IS NOT NULL GROUP BY a.host,b.ad order by num desc;
+	
+	CREATE TABLE IF NOT EXISTS host_ad(host string,ad string,count string) PARTITIONED BY(dt STRING,dp string) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\001' LINES TERMINATED BY '\n';
+	load data inpath '/user/uclick/hostads/000000_0' overwrite into table host_ad partition(dt=20140717,dp='part1');
+	
+	INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/lq/SWA_Eclipse/cplus/userad/branches/admatch_strategy/temp/uclick/output3' SELECT a.cate,b.ad, sum(b.count) as num FROM host_cate_redis a JOIN host_ad  b ON a.host=b.host where  a.host IS NOT NULL and b.host IS NOT NULL GROUP BY a.cate,b.ad order by num desc;
+		
+	load data inpath '/user/uclick/uads/uclkad_0728.txt' overwrite into table user_click partition(dt=20140728,dp='part1');
+	load data inpath '/user/uclick/uhosts/uhostclean_0728.txt' overwrite into table user_host partition(dt=20140728,dp='part1');
+	
+	load data inpath '/user/uclick/uads/uclikad_2014-07-29.txt' overwrite into table user_click partition(dt=20140729,dp='part1');
+	load data inpath '/user/uclick/uhosts/uhost_2014-07-29.log' overwrite into table user_host partition(dt=20140729,dp='part1');
+	INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/lq/SWA_Eclipse/cplus/userad/branches/admatch_strategy/temp/uclick/output_0729' SELECT a.host,b.ad, count(1) as num FROM user_host a JOIN user_click b  ON  a.cookie=b.cookie where a.dt=20140729 and b.dt=20140729 and a.cookie IS NOT NULL  and b.cookie IS NOT NULL GROUP BY a.host,b.ad order by num desc;
+	
+	
+	
+	
+	CREATE TABLE IF NOT EXISTS host_sif(host string) PARTITIONED BY(dt STRING,dp string) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\001' LINES TERMINATED BY '\n';
+	
+	CREATE TABLE IF NOT EXISTS nstat_cookie(cookie string) PARTITIONED BY(dt STRING,dp string) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\001' LINES TERMINATED BY '\n';
+	CREATE TABLE IF NOT EXISTS adshow_cookie(cookie string) PARTITIONED BY(dt STRING,dp string) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\001' LINES TERMINATED BY '\n'
+	
+	CREATE TABLE IF NOT EXISTS host_sifu_sel(host string) PARTITIONED BY(dt STRING,dp string) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\001' LINES TERMINATED BY '\n';
+	CREATE TABLE IF NOT EXISTS host_adjust(host string) PARTITIONED BY(dt STRING,dp string) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\001' LINES TERMINATED BY '\n';
+	
+	INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/sifu/sifu_output/sifu_0406_pv_two_week' SELECT a.dt,a.host, count(1) as num FROM iaccess a JOIN host_sifu b  ON  a.host=b.host where a.dt>=20140403 and a.dt<=20140416   and a.host IS NOT NULL GROUP BY a.dt,a.host order by num desc;
+	
+	 /***统计湖州4月3号前后的变化量***/
+	INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/hive_opera/output/adjust_hz' SELECT a.dt,a.host,count(1), count(distinct(a.sip)) as num FROM nstat a JOIN host_adjust b  ON  a.host=b.host where a.dt>=20140327  and a.host IS NOT NULL and loc like "%湖州%" GROUP BY a.dt,a.host order by num desc;
+	
+	
+	load data inpath '/user/hadoop/sifu_sel/part-00000' overwrite into table host_sifu_sel partition(dt=20140406,dp='part1');
+	
+	load data inpath '/user/hadoop/host_adjust/part-00000' overwrite into table host_adjust partition(dt=20140417,dp='part1');
+	load data inpath '/user/hadoop/sifu_sel/part-00000' overwrite into table host_adjust partition(dt=20140417,dp='part1');
+	load data inpath '/user/hadoop/sifu_sel/20140701/part00001' overwrite into table host_sifu_sel partition(dt=20140701,dp='part1');
+	load data inpath '/user/hadoop/sifu_sel/20140818/part00001' overwrite into table host_sifu_sel partition(dt=20140818,dp='part1');
+		
+		
+	load data inpath '/user/match/rest/rest_cookie.txt' overwrite into table rest_cookie partition(dt=20140523,dp='part1');
+	load data inpath '/user/match/admatch/admatch_cookie.txt' overwrite into table admatch_cookie partition(dt=20140523,dp='part1');
+	load data inpath '/user/match/adshow/cookies.log' overwrite into table adshow_cookie partition(dt=20140527,dp='part1');
+	
+	INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/lq/nstat_user/nstat_adshow_same_cookie' SELECT a.cookie FROM nstat_cookie a JOIN adshow_cookie b  ON  a.cookie=b.cookie where a.cookie IS NOT NULL and b.cookie IS NOT NULL;
+    INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/lq/nstat_user/rest_adshow_same_cookie' SELECT a.cookie FROM rest_cookie a JOIN adshow_cookie b  ON  a.cookie=b.cookie where a.cookie IS NOT NULL and b.cookie IS NOT NULL;
+    INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/lq/nstat_user/nstat_cookie' SELECT distinct(cookie) FROM nstat_cookie;
+    INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/lq/nstat_user/rest_cookie' SELECT distinct(cookie) FROM rest_cookie;
+    INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/lq/nstat_user/nstat_rest_same_cookie' SELECT a.cookie FROM nstat_cookie a JOIN rest_cookie b  ON  a.cookie=b.cookie where a.cookie IS NOT NULL and b.cookie IS NOT NULL;
+
+    INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/lq/nstat_user/area_code' SELECT area,loc FROM nstat;
+
+	INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/sifu/sifu_output/sifu_0406_ip_uv_sel_two_week' SELECT a.dt,a.host,a.refer, count(distinct(ci_ip)), count(distinct(cookie)),as num FROM iaccess a JOIN host_sifu_sel b  ON  a.host=b.host where a.dt>=20140403 and a.dt<=20140416   and a.host IS NOT NULL GROUP BY a.dt,a.host,a.refer order by num desc;
+	
+	
+	
+	INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/hive_opera/output/host_distribute_pv_ip_20140417' SELECT a.dt,a.host,b.cate,count(1) as num,count(distinct(a.sip)) as num2 FROM nstat a JOIN host_cate_redis b  ON  a.host=b.host where a.dt=20140417  and b.cate!='NA' and b.cate IS NOT NULL and a.sip IS NOT NULL GROUP BY a.dt,a.host,b.cate order by num desc;
+	
+	INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/hive_opera/output/all_distribute_pv_ip_20140420' SELECT a.dt,b.cate,count(1) as num,count(distinct(a.sip)) as num2 FROM nstat a JOIN host_cate_redis b  ON  a.host=b.host where a.dt=20140420  and b.cate!='NA' and b.cate IS NOT NULL and a.sip IS NOT NULL and banhosturl(concat(a.host,'\001',a.url))=true GROUP BY a.dt,b.cate order by num desc;
+	
+	show functions;  
+	
+	list jars;
+	hive> ADD JAR /full/path/to/zodiac.jar;  
+    hive> CREATE TEMPORARY FUNCTION banhosturl   AS 'cn.clickwise.liqi.hive.contrib.udf.BanHostUrl';   
+	DROP TEMPORARY FUNCTION IF EXISTS banhosturl;   
+	  
+	  
+	  
+	INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/lq/nstat_user/nstat_adshow_same_cookie/20140526' SELECT distinct(b.cookie) FROM nstat_oneday_cookie a JOIN  adshow_cookie b  ON  a.cookie=b.cookie where a.cookie IS NOT NULL and b.cookie IS NOT NULL and a.dt=20140526 and b.dt=20140526;
+	
+	 /**********私服*****************/
+	 INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/sifu/sifu_output/20140701' SELECT a.host, a.refer,count(distinct ci_ip) as num,count(distinct cookie) FROM iaccess a JOIN host_sifu_sel b  ON  a.host=b.host where a.host IS NOT NULL and b.host IS NOT NULL and b.dt=20140701 and a.dt>=20140624 and a.dt<=20140701  group by a.host,a.refer order by num desc;
+	 
+	 load data inpath '/user/hadoop/sifu_sel/20140710/sifu_0710.txt' overwrite into table host_sifu_sel partition(dt=20140710,dp='part1');
+	 
+	 INSERT OVERWRITE LOCAL DIRECTORY '/home/hadoop/liqi/sifu/sifu_output/20140710' SELECT a.host, a.refer,count(distinct ci_ip) as num,count(distinct cookie) FROM iaccess a JOIN host_sifu_sel b  ON  a.host=b.host where a.host IS NOT NULL and b.host IS NOT NULL and b.dt=20140710 and a.dt>=2014007 and a.dt<=20140709  group by a.host,a.refer order by num desc;
+	 
+	 
+	 
+	 /**********用户特征*****************/
+	 
+	 CREATE TABLE IF NOT EXISTS user_admatch(uid string,datatype string,addtime string,info string) PARTITIONED BY(dt STRING,dp string) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\001' LINES TERMINATED BY '\n';
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 

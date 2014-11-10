@@ -1,0 +1,18 @@
+$ awk -F":" '{print $1}' /etc/passwd  ---- 按照：进行分割，并输出分割后的第一个值；  
+-F ---- 表示按照某个字符进行分隔；  
+$ awk -F":" '{print $1 $3}' /etc/passwd ---- 按照：进行分割，输出分割后的第1个值及第3个值，值与值之间是相连的。  
+$ awk -F":" '{print $1" "$3}' /etc/passwd ---- 按照：进行分割，输出分割后的第1个值及第3个值，而且值与值之前有空格分隔。  
+$ awk -F":" '{print "username:" $1 "\tuid:"$3}' /etc/passwd  ---- 按照：进行分隔，输出第1个值及第3个值，在输出时加入一些内容
+
+cat ana_data.txt | awk -F" " '{ if(NF<3){ next} for(i=1;i<NF;i++) {printf("%s ",$i)} print "" }' | more
+cat ana_data.txt | awk -F"\001" '{ if(NF<3){ next} for(i=1;i<=NF;i++) {printf("%s ",$i)} print "" }' | more
+
+sed -e 's/\x1/\t/g'
+
+sed -e 's/\x1/ /g' | awk '{if ($7 ~ /www.meilishuo.com/) {print $0;}}' | more
+
+ hadoop fs -cat /user/nstat/20140224/raw/201402242034_t6401_eth3_1791945930.log | awk -F'\001' '{print $6$7}' | awk '{if($1 !~ /js/) {print $1}}' | more
+ 
+ awk -F'\001' '{print $6$7}' | awk '{if(($1 ~ /www.letv.com.ptv.vplay/)&&($1 !~ /js/)){print $0}}' | more
+tail -f queryUid/queryLog_20141030 | awk -F'\001' '{print substr($1,33,3)}' | more
+tail  queryUid/queryLog_20141030 | awk -F'\001' '{if(substr($1,33,3)=="030"){print $1}}' | more

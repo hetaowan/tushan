@@ -1,0 +1,19 @@
+<?php
+
+$so=scws_new();
+$so->set_charset('utf8');
+
+$text="系统未提供关于该结果的说明";
+        $so->send_text($text);
+        $top = $so->get_tops(30);
+
+foreach($top as $val)
+{
+                  $word=trim($val["word"]);
+                $freq=$val["times"];
+
+         echo $word." ".$freq."\n";
+}
+
+
+?>

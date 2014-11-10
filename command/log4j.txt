@@ -1,0 +1,2 @@
+每小时生成一个日志文件
+log4j.appender.dufLog.DatePattern = '_'yyyy-MM-dd-HH'.log'

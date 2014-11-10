@@ -1,0 +1,41 @@
+Error: unable to create new native thread Error initializing attempt_201111090003_0013_r_000000_0: java.lang.OutOfMemoryError: unable to create new native thread at java.lang.Thread.start0(Native Method) at java.lang.Thread.start(Thread.java:614) at java.lang.UNIXProcess$1.run(UNIXProcess.java:157) at java.security.AccessController.doPrivileged(Native Method) at java.lang.UNIXProcess.(UNIXProcess.java:119) at java.lang.ProcessImpl.start(ProcessImpl.java:81) at java.lang.ProcessBuilder.start(ProcessBuilder.java:468) at org.apache.hadoop.util.Shell.runCommand(Shell.java:149) at org.apache.hadoop.util.Shell.run(Shell.java:134) at org.apache.hadoop.fs.DF.getAvailable(DF.java:73) at org.apache.hadoop.fs.LocalDirAllocator$AllocatorPerContext.getLocalPathForWrite(LocalDirAllocator.java:329) at org.apache.hadoop.fs.LocalDirAllocator.getLocalPathForWrite(LocalDirAllocator.java:124) at org.apache.hadoop.mapred.TaskTracker.localizeJob(TaskTracker.java:750) at org.apache.hadoop.mapred.TaskTracker.startNewTask(TaskTracker.java:1664) at org.apache.hadoop.mapred.TaskTracker.access$1200(TaskTracker.java:97) at org.apache.hadoop.mapred.TaskTracker$TaskLauncher.run(TaskTracker.java:1629) 
+
+When you have this kind of erros when runnning hadoop jobs, there might be a numer of possible reasons thanks to the feeble implementation of Hadoop. One possible reason is because in your MapReduce programs you open too much processes exceeding the default setting of your OS, for example, the default number is 1024 (you can check this number by executing 'ulimit -u'). A perfect example of using many processes would be such a case, in which you want control the output file name based on key-value pair in the reduce stage. To solve this problem, you need to modify some configuration files to raise up the maximum process number you can use, which can be done by editing /etc/security/limits.conf. Simply adding the following two lines to the llimits.conf to set the 100000 as the maximum number of processs in your system for user hadoop.
+
+hadoop soft nproc 100000 
+hadoop hard nproc 10000
+2014-04-01 13:23:30,268 INFO org.apache.hadoop.hdfs.server.common.Storage: Edits file /home/hadoop/hadoop_name/current/edits of size 230241 edits # 1800 loaded in 0 seconds.
+2014-04-01 13:23:30,346 ERROR org.apache.hadoop.hdfs.server.namenode.FSNamesystem: FSNamesystem initialization failed.
+java.io.IOException: Incorrect data format. logVersion is -31 but writables.length is 0.
+    at org.apache.hadoop.hdfs.server.namenode.FSEditLog.loadFSEdits(FSEditLog.java:542)
+    at org.apache.hadoop.hdfs.server.namenode.FSImage.loadFSEdits(FSImage.java:1014)
+    at org.apache.hadoop.hdfs.server.namenode.FSImage.loadFSImage(FSImage.java:827)
+    at org.apache.hadoop.hdfs.server.namenode.FSImage.recoverTransitionRead(FSImage.java:365)
+    at org.apache.hadoop.hdfs.server.namenode.FSDirectory.loadFSImage(FSDirectory.java:97)
+    at org.apache.hadoop.hdfs.server.namenode.FSNamesystem.initialize(FSNamesystem.java:379)
+    at org.apache.hadoop.hdfs.server.namenode.FSNamesystem.<init>(FSNamesystem.java:353)
+    at org.apache.hadoop.hdfs.server.namenode.NameNode.initialize(NameNode.java:254)
+    at org.apache.hadoop.hdfs.server.namenode.NameNode.<init>(NameNode.java:434)
+    at org.apache.hadoop.hdfs.server.namenode.NameNode.createNameNode(NameNode.java:1153)
+    at org.apache.hadoop.hdfs.server.namenode.NameNode.main(NameNode.java:1162)
+2014-04-01 13:23:30,347 ERROR org.apache.hadoop.hdfs.server.namenode.NameNode: java.io.IOException: Incorrect data format. logVersion is -31 but writables.length is 0.
+    at org.apache.hadoop.hdfs.server.namenode.FSEditLog.loadFSEdits(FSEditLog.java:542)
+    at org.apache.hadoop.hdfs.server.namenode.FSImage.loadFSEdits(FSImage.java:1014)
+    at org.apache.hadoop.hdfs.server.namenode.FSImage.loadFSImage(FSImage.java:827)
+    at org.apache.hadoop.hdfs.server.namenode.FSImage.recoverTransitionRead(FSImage.java:365)
+    at org.apache.hadoop.hdfs.server.namenode.FSDirectory.loadFSImage(FSDirectory.java:97)
+    at org.apache.hadoop.hdfs.server.namenode.FSNamesystem.initialize(FSNamesystem.java:379)
+    at org.apache.hadoop.hdfs.server.namenode.FSNamesystem.<init>(FSNamesystem.java:353)
+    at org.apache.hadoop.hdfs.server.namenode.NameNode.initialize(NameNode.java:254)
+    at org.apache.hadoop.hdfs.server.namenode.NameNode.<init>(NameNode.java:434)
+    at org.apache.hadoop.hdfs.server.namenode.NameNode.createNameNode(NameNode.java:1153)
+    at org.apache.hadoop.hdfs.server.namenode.NameNode.main(NameNode.java:1162)
+	
+解决过程
+    
+     printf "\xff\xff\xff\xee\xff">edits
+	 将edits.new 改为 edits.bak
+	 重启hadoop
+	 
+	 
+	  hadoop job -set-priority job_201404111331_1171 VERY_HIGH

@@ -1,0 +1,23 @@
+ÍË³ö£ºbye
+yum install vsftpd
+/usr/sbin/vsftpd /etc/vsftpd/vsftpd.conf
+ service vsftpd restart 
+ ftp 192.168.110.182 21
+ useradd virtusers -s /sbin/nologin
+ ftp 192.168.110.182 21
+ ftpadt  123456
+ netstat -natlp |grep vsftp
+ 
+ /home/zjdx
+  ftp 192.168.10.6 9211
+  ftp 183.136.168.79 9211
+ zjdx
+ zjdx2014
+ adduser tmp_3452
+
+ 
+
+  ĞŞ¸ÄÃÜÂëÃüÁî£º
+[root@ptr228 ~]# passwd ftpadt
+                        adt123
+						usermod -s /sbin/nologin

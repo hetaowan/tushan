@@ -1,0 +1,4 @@
+cd /usr/local/src
+下载 apache-ant-1.7.1-bin.tar.gz
+tar -zxvf apache-ant-1.7.1-bin.tar.gz
+mv apache-ant-1.7.1 ..

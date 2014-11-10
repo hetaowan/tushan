@@ -1,0 +1,10 @@
+wget  http://redis.googlecode.com/files/redis-2.0.4.tar.gz
+tar zxvf redis-2.0.4.tar.gz
+cd  redis-2.0.4
+   make
+make完后 redis-2.0.4目录下会出现编译后的redis服务程序redis-server,还有用于测试的客户端程序redis-cli
+安装成功
+
+
+$database=5;
+$redis->select($database);

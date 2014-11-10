@@ -1,0 +1,1 @@
+memcached -d -l 127.0.0.1 -p 12188 -m 128 -u root

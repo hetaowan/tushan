@@ -1,0 +1,9 @@
+#scp -P 4400 -r root@10.0.24.103:/home2/backup/ /home/mover00/shadow_bak/sites/拷贝远程（10.0.24.103）的/home2/backup/ 到本地的 /home/mover00/shadow_bak/sites/#scp -P 4400 -r /home2/backup/ root@10.0.24.99:/home/mover00/shadow_bak/sites/ 拷贝本地的/home2/backup/ 到远程（10.0.24.99）的 /home/mover00/shadow_bak/sites/
+
+ssh  连接远程ssh非22端口的服务器方法
+
+ssh -p 20086 tiaoban@远程ssh服务器ip
+
+scp -R -P 9777 192.168.210.206:/home/hadoop/lq/hostCate/host_label_dir/old_crawl_info /home/hadoop/lq/kan114/BaiduHotKeyWords/BKW_Src/JBKW/dict
+
+scp -P 9777 baidu_hotdata_20131203.txt root@122.72.12.37:/datadisk/baidu_data

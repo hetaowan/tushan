@@ -1,0 +1,3 @@
+使用Java程序从数据库中查询大量的数据时出现异常:
+java.lang.OutOfMemoryError: Java heap space
+在JVM中如果98％的时间是用于GC且可用的 Heap size 不足2％的时候将抛出此异常信息。

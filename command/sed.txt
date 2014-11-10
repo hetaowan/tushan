@@ -1,0 +1,19 @@
+sed   's/<[^>]*>//g' test.txt
+
+hadoop fs -cat /user/hive/warehouse/clk_data/dt=20130915/dp=clk_data/part-00285 |sed -e 's/\x1/\t/g' |awk '{print $7}' |head -n 100 > /tmp/1.log
+
+
+/etc/sysconfig/network-scripts/ifcfg-eth0
+
+查看文件song.txt的第190行到196行，
+sed -n '190,196p' song.txt
+
+sed -n '30454,30509p' user_train_on_clean_sort.txt
+
+29793646
+
+head -n 1000 bkw_ten_day_five.txt|sed -e 's/\x1/ /g' | sort -k2 | more
+
+cat radius-2014-02-08.txt | grep '115.239.102.212' | sed -e 's/\t/ /g' | sort -k5
+
+sed -e 's/\s*//g'|awk '{if($0~/[A-Z]/) print "http://www.qunar.com/suggest/livesearch2.jsp?lang=zh&q="$0"&sa=true&ver=1&callback=XQScript_261"}'

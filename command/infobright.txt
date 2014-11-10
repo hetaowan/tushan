@@ -1,0 +1,11 @@
+LOAD DATA INFILE '/tmp/dns_request/$1/part-r-00001' INTO TABLE dns_request_$1 CHARACTER SET utf8 FIELDS TERMINATED BY '\001' LINES TERMINATED BY '\n'
+
+rpm -ivh infobright-4.0.6-0-i686-ice.rpm --prefix=/usr/local/
+cd /usr/local/infobright-4.0.6-i686; ./postconfig.sh
+/usr/local/infobright/bin/mysql -uroot -p123 -h192.168.110.186 --port 5029
+GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' IDENTIFIED BY '12345678';
+/etc/init.d/mysqld-ib start
+select * from dns_domain_day where requestnum>1000 order by requestnum desc limit 100;
+
+/home/hadoop/click_ana/nstat_218/pp_218/pp_users
+mysql-ib -uroot -pdmp123 -h192.168.10.39

@@ -1,0 +1,337 @@
+CentOS release 6.2 (Final)
+x86_64
+
+/etc/sysconfig/network
+NETWORKING=yes
+NETWORKING_IPV6=no
+HOSTNAME=adt7
+
+
+192.168.210.205 修改主机名为 hndx_fx_205
+hostname hndx_fx_205
+vi /etc/hosts
+192.168.210.205   192.168.210.205   hndx_fx_205
+
+vi /etc/sysconfig/network
+NETWORKING=yes
+NETWORKING_IPV6=no
+HOSTNAME=hndx_fx_205
+
+192.168.210.206
+192.168.210.207
+192.168.210.208
+类似修改成
+hndx_fx_206
+hndx_fx_207
+hndx_fx_208
+
+ 
+将四台机器的hosts都设置为
+192.168.210.208   192.168.210.208   hndx_fx_208
+192.168.210.205   192.168.210.205   hndx_fx_205
+192.168.210.206   192.168.210.206   hndx_fx_206
+192.168.210.207   192.168.210.207   hndx_fx_207
+192.168.10.28 192.168.10.28 zjdx_fx28
+
+把192.168.10.28-31 4台分析机器，192.168.10.38-41 4台存储机器添加至hadoop集群
+#yum install wget
+yum install mysql-libs mysql.x86_64 mysql-devel.x86_64 mysql-server
+
+service mysqld restart
+mysqladmin -u root password '123'
+mysql -uroot -p123
+
+yum install php.x86_64
+yum install php-mysql.x86_64
+
+yum install openssh-clients.x86_64
+
+yum install java-1.6.0-openjdk.x86_64
+yum install java-1.6.0-openjdk-devel.x86_64
+yum install java-1.6.0-openjdk-demo.x86_64
+yum install java-1.6.0-openjdk-javadoc.x86_64
+yum install java-1.6.0-openjdk-src.x86
+
+java-1.7.0-openjdk.x86_64 : OpenJDK Runtime Environment
+java-1.7.0-openjdk-demo.x86_64 : OpenJDK Demos
+java-1.7.0-openjdk-devel.x86_64 : OpenJDK Development Environment
+java-1.7.0-openjdk-javadoc.x86_64 : OpenJDK API Documentation
+java-1.7.0-openjdk-src.x86_64 : OpenJDK Source Bundle
+各台机器在/etc/profile
+HADOOP_HOME=/home/hadoop/hadoop
+HIVE_HOME=/home/hadoop/hive
+JAVA_HOME=/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0.x86_64
+JRE_HOME=$JAVA_HOME/jre
+CLASSPATH=$JAVA_HOME/lib:$JRE_HOME/lib:$CLASSPATH
+PATH=$JAVA_HOME/bin:$HADOOP_HOME/bin:$HIVE_HOME/bin:$PATH
+export PATH USER LOGNAME MAIL HOSTNAME HISTSIZE INPUTRC HADOOP_HOME JAVA_HOME JRE_HOME CLASSPATH HIVE_HOME
+
+master和slave机器都有相同的用户hadoop
+groupadd hadoop
+useradd -g hadoop hadoop
+
+主节点
+su hadoop
+ssh-keygen  -t  rsa -P ""
+	这样在/home/haoop/.ssh/目录下生成公私密钥：id_rsa.pub（公钥），id_rsa.pub（私钥）
+	其次，在本目录下将刚才生成的id_rsa.pub内容添加authorized_keys文件中：
+cd /home/hadoop/.ssh
+cat id_rsa.pub >> authorized_keys
+	第三，更改authorized_keys文件的权限：
+		#chmod 644 authorized_keys
+
+		
+从节点
+root身份
+cd /home/hadoop
+mkdir .ssh
+chmod 755 .ssh
+
+主节点
+su root
+scp /home/hadoop/.ssh/authorized_keys 221.174.16.15:/home/hadoop/.ssh/
+
+tar zxf hadoop-0.20.203.0rc1.tar.gz 
+mv hadoop-0.20.203.0rc1 hadoop
+
+	i).hadoop-env.sh
+	我们需要做的只是修改JAVA_HOME。
+	#cd /home/hadoop/hadoop 
+	打开 <HADOOP_INSTALL>/conf/hadoop-env.sh文件，将
+  # The java implementation to use.  Required.
+  # export JAVA_HOME=/usr/lib/j2sdk1.5-sun
+修改成
+  # The java implementation to use.  Required.
+  export JAVA_HOME=/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0.x86_64
+  export HADOOP_SSH_OPTS="-p 9777"
+  export HADOOP_PID_DIR=~/hadoop-0.20.2-pid
+  
+
+	iii).hadoop-site.xml
+  	#cd /home/hadoop/hadoop-0.20.2/conf
+  	#vim core-site.xml
+				<property>
+			  <name>fs.default.name</name>
+			  <value>hdfs://192.168.1.4:54310</value>
+			  <description>The name of the default file system.  A URI whose
+			  scheme and authority determine the FileSystem implementation.  The
+			  uri's scheme determines the config property (fs.SCHEME.impl) naming
+			  the FileSystem implementation class.  The uri's authority is used to
+			  determine the host, port, etc. for a FileSystem.</description>
+			</property>
+
+
+			<property>
+			  <name>mapreduce.task.io.sort.mb</name>
+			  <value>300</value>
+			  <description>
+				size of buffer to sort the reduce inputs in.</description>
+			</property>
+
+			<property>
+			  <name>fs.trash.interval</name>
+			  <value>90</value>
+			  <description>
+				  Number of minutes between trash checkpoints. If zero, the trash feature is disabled
+			  </description>
+			</property>
+							
+		
+	#vim hdfs-site.xml:( replication 默认为3，如果不修改，datanode 少于三台就会报错)
+                <configuration>
+                <property>
+				  <name>dfs.http.address</name>
+				  <value>192.168.1.4:50070</value>
+				  <description>
+					The address and the base port where the dfs namenode web ui will listen on.
+					If the port is 0 then the server will start on a free port.
+				  </description>
+				</property>
+
+				<property>
+				  <name>hadoop.tmp.dir</name>
+				  <value>/home/${user.name}/tmp/cluster/dir/hadoop-${user.name}</value>
+				  <description>A base for other temporary directories.</description>
+				</property>
+
+				<property>
+				  <name>dfs.replication</name>
+				  <value>2</value>
+				  <description>Default block replication.
+				  The actual number of replications can be specified when the file is created.
+				  The default is used if replication is not specified in create time.
+				  </description>
+				</property>
+				<property>
+                <name>dfs.name.dir</name>
+                <value>/home/hadoop/hadoop_name</value>
+                </property>
+                <property>
+                <name>dfs.data.dir</name>
+                <value>/hadoop/hadoop_data</value>
+                </property>
+
+		</configuration>
+	#vim mapred-site.xml:
+		<configuration>
+				<property>
+				  <name>mapred.job.tracker</name>
+				  <value>192.168.1.4:54311</value>
+				  <description>The host and port that the MapReduce job tracker runs
+				  at.  If "local", then jobs are run in-process as a single map
+				  and reduce task.
+				  </description>
+				</property>
+
+				<property>
+				  <name>mapred.child.java.opts</name>
+				  <value>-Xmx3600m</value>
+				  <description>Java opts for the task tracker child processes.
+				  The following symbol, if present, will be interpolated: @taskid@ is replaced
+				  by current TaskID. Any other occurrences of '@' will go unchanged.
+				  For example, to enable verbose gc logging to a file named for the taskid in
+				  /tmp and to set the heap maximum to be a gigabyte, pass a 'value' of:
+						-Xmx1024m -verbose:gc -Xloggc:/tmp/@taskid@.gc
+
+				  The configuration variable mapred.child.ulimit can be used to control the
+				  maximum virtual memory of the child processes.
+				  </description>
+				</property>
+
+				<property>
+				  <name>mapred.tasktracker.map.tasks.maximum</name>
+				  <value>10</value>
+				  <description>The maximum number of map tasks that will be run
+				  simultaneously by a task tracker.
+				  </description>
+				  </property>
+
+				<property>
+				  <name>mapred.tasktracker.reduce.tasks.maximum</name>
+				  <value>4</value>
+				  <description>The maximum number of reduce tasks that will be run
+				  simultaneously by a task tracker.
+				  </description>
+				</property>
+
+				<property>
+				  <name>mapred.task.timeout</name>
+				  <value>120000000</value>
+				  <description>The number of milliseconds before a task will be
+				  terminated if it neither reads an input, writes an output, nor
+				  updates its status string.
+				  </description>
+				</property>
+
+				<property>
+				  <name>mapred.task.tracker.http.address</name>
+				  <value>0.0.0.0:50061</value>
+				</property>
+		</configuration>
+
+
+mkdir -p /hadoop/hadoop_data
+chown -R hadoop:hadoop /hadoop/		
+scp -r hadoop 192.168.210.206:/home/hadoop/
+scp -r hadoop 192.168.210.207:/home/hadoop/
+scp -r hadoop 192.168.210.208:/home/hadoop/
+
+各节点以root身份关闭防火墙
+/etc/init.d/iptables stop
+
+四台机器
+cp contrib/streaming/hadoop-streaming-0.20.203.0.jar lib
+
+主节点
+tar -xzvf hive-0.7.0-bin.tar.gz  
+mv hive-0.7.0-bin hive
+hadoop fs -mkdir       /tmp
+hadoop fs -mkdir       /user/hive/warehouse
+hadoop fs -chmod g+w   /tmp
+hadoop fs -chmod g+w   /user/hive/warehouse
+
+配置本地mysql metastore
+修改配置hive-default.xml
+<property>
+  <name>hive.metastore.warehouse.dir</name>
+  <value>/user/hive/warehouse</value>
+</property>
+
+<property>
+  <name>hive.metastore.local</name>
+  <value>true</value>
+</property>
+
+<property>
+  <name>javax.jdo.option.ConnectionURL</name>
+  <value>jdbc:mysql://127.0.0.1/hive?createDatabaseIfNotExist=true</value>
+</property>
+
+<property>
+  <name>javax.jdo.option.ConnectionDriverName</name>
+  <value>com.mysql.jdbc.Driver</value>
+</property>
+
+<property>
+  <name>javax.jdo.option.ConnectionUserName</name>
+  <value>root</value>
+</property>
+
+<property>
+  <name>javax.jdo.option.ConnectionPassword</name>
+  <value>123</value>
+</property>
+
+mysql 的版本为mysql  Ver 14.14 Distrib 5.1.52
+把此文件下的mysql-connector-java-5.1.13.tar.gz　中的解压中的mysql-connector-java-5.1.13-bin.jar　改为mysql.jar并把它移到HIVE_HOME/lib目录下面。
+
+拷贝workplace到主节点
+
+
+主从节点
+yum install gcc automake autoconf libtool make php-devel
+
+cd /usr/src
+安装scws-php
+wget http://www.xunsearch.com/scws/down/scws-1.2.1.tar.bz2
+
+tar xvjf scws-1.2.1.tar.bz2
+
+cd scws-1.2.1
+./configure --prefix=/usr/local/scws ; make ; make install
+
+注：这里和通用的 GNU 软件安装方式一样，具体选项参数执行 ./configure --help 查看。
+常用选项为：--prefix=<scws的安装目录>
+
+ cd /usr/local/scws/etc
+
+wget http://www.xunsearch.com/scws/down/scws-dict-chs-gbk.tar.bz2
+wget http://www.xunsearch.com/scws/down/scws-dict-chs-utf8.tar.bz2
+ tar xvjf scws-dict-chs-gbk.tar.bz2
+tar xvjf scws-dict-chs-utf8.tar.bz2
+ cd ../..
+ chmod -R a+rwx scws
+    1) 进入源码目录的 phpext/ 目录 ( cd ~/scws-1.2.1 )
+    2) 执行 phpize （在PHP安装目录的bin/目录下）
+    3) 执行 ./configure --with-scws=/usr/local/scws 
+       若 php 安装在特殊目录 $php_prefix, 则请在 configure 后加上 --with-php-config=$php_prefix/bin/php-config
+    4) 执行 make 然后用 root 身份执行 make install     
+    5) 在 php.ini 中加入以下几行
+extension = scws.so
+scws.default.charset = utf-8
+scws.default.fpath = /usr/local/scws/etc
+
+
+yum install bc#系统自带的一个计算相关的命令
+yum install php-mbstring
+
+
+各节点更改hadoop用户打开的进程和文件个数, /etc/security/limits.conf
+hadoop soft nofile 640000
+hadoop hard nofile 640000
+hadoop soft nproc 640000
+hadoop hard nproc 640000
+
+./configure --prefix=/usr/local/libiconv
+make
+make install

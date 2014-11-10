@@ -1,0 +1,1 @@
+-prop train.prop -serDictionary  data/dict-chris6.ser.gz -sighanCorporaDict data -trainFile data/ctb6.train.seg -serializeTo seg_external_dict.gz -exportFeatures feat.txt

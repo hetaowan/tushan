@@ -1,0 +1,7 @@
+　　实例1：改变拥有者和群组
+
+　　命令：
+
+　　　　chown mail:mail log2012.log
+chown -R hadoop:hadoop nstat
+chown nobody /shared/book.tex

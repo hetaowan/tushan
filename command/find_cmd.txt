@@ -1,0 +1,6 @@
+find / -name '*redis*'
+find / -name service
+
+find /etc -name “*” | xargs grep “hello abcserver”
+
+或者find /etc -name “*” | xargs grep “hello abcserver” > ./cqtest.txt

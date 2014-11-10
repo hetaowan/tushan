@@ -1,0 +1,1 @@
+cat 000000_0 |grep -B 2 -n 'www.amazon.cn' | head -n 100

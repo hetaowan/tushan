@@ -1,0 +1,1 @@
+-prop config/train_beq2_train.prop -serDictionary  data/dict-chris6.ser.gz -sighanCorporaDict data -trainFile ccrf_corpus/beq.train.seg -serializeTo trainbeq.gz -exportFeatures feat.txt

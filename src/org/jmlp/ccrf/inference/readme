@@ -1,0 +1,26 @@
+给定训练样本和当前的alpha、theta参数，计算每个特征的期望和频率，以计算目标函数对于每个参数的梯度
+20141018:
+  下一步可能要将inference里的FactorTable 用Clique代替
+ 
+20141019:
+  重要的是  Sentence 里 innerCliques 和 outerCliques 边缘概率的求解
+  要想好 assignment 和 innercliques outcliques 之间的关系
+ 实现过程：
+   1。输入一个句子或片断，建立sentence对象
+   2.建立inner cliques
+   3.获得所有可能的assignment
+   4.对于每一个assignment 建立outer cliqueTree ,并将inner cliques的 factor 分散到cliqueTree的各个 outer clique上
+   5.获得该sentence inner crf 和 outer crf 的所有特征
+   6.综合所有的sentence对特征进行编号，初始权重
+   7.每个sentence 在cliqueTrees上进行inference
+   8.计算每个sentence的Ei[fk]和Ei[hj]
+   9.综合所有的sentence得到E[fk]和E[hj]
+   10.更新特征权重，返回步骤7
+   11。重复7-10直到算法收敛
+   
+ 
+ 计划安排:
+   2014-10-21~ 2014-10-26
+          给定一段样本,即Word[] 数组，能够提取出其中的特征。
+  
+  

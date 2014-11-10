@@ -1,0 +1,9 @@
+tar -xzvf owlient-phpredis-90ecd17.tar.gz && cd owlient-phpredis-90ecd17
+phpize
+./configure --with-php-config=/usr/bin/php-config
+make && make install
+echo extension=redis.so >>/etc/php.ini
+php -m|grep redis
+天之道  13:19:50
+ls owlient-phpredis-90ecd17.tar.gz 
+/root

@@ -1,0 +1,69 @@
+配置修改: 
+  hive 配置：
+  
+  <property>
+  <name>hive.stats.dbclass</name>
+  <value>jdbc:derby</value>
+  <description>The default database that stores temporary hive statistics.</description>
+</property>
+ 变成：
+ <property>  
+  <name>hive.stats.dbclass</name>  
+  <value>jdbc:mysql</value>  
+  <description>The default database that stores temporary hive statistics.</description>  
+</property>
+  
+  
+  
+  
+   <property>
+  <name>hive.stats.jdbcdriver</name>
+  <value>org.apache.derby.jdbc.EmbeddedDriver</value>
+  <description>The JDBC driver for the database that stores temporary hive statistics.</description>
+  </property>
+  变成：
+  <property>  
+  <name>hive.stats.jdbcdriver</name>  
+  <value>com.mysql.jdbc.Driver</value>  
+  <description>The JDBC driver for the database that stores temporary hive statistics.</description>  
+</property>
+
+
+<property>
+  <name>hive.stats.dbconnectionstring</name>
+  <value>jdbc:derby:;databaseName=TempStatsStore;create=true</value>
+  <description>The default connection string for the database that stores temporary hive statistics.</description>
+</property>
+变成：
+ <property>  
+  <name>hive.stats.dbconnectionstring</name>  
+  <value>jdbc:mysql://192.168.110.180:3306/HiveStats?createDatabaseIfNotExist=true&amp;user=root&amp;password=123</value>  
+  <description>The default connection string for the database that stores temporary hive statistics.</description>  
+</property
+
+
+
+221 到 scp /home/hadoop/.ssh/authorized_keys 221.174.16.15:/home/hadoop/.ssh/
+从 205 到 221 ping 不通
+
+
+
+hive 205 old:
+<property>
+  <name>hive.stats.dbclass</name>
+  <value>jdbc:derby</value>
+  <description>The default database that stores temporary hive statistics.</description>
+</property>
+
+<property>
+  <name>hive.stats.jdbcdriver</name>
+  <value>org.apache.derby.jdbc.EmbeddedDriver</value>
+  <description>The JDBC driver for the database that stores temporary hive statistics.</description>
+</property>
+
+<property>
+  <name>hive.stats.dbconnectionstring</name>
+  <value>jdbc:derby:;databaseName=TempStatsStore;create=true</value>
+  <description>The default connection string for the database that stores temporary hive statistics.</description>
+</property>
+
